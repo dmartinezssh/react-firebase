@@ -1,0 +1,5 @@
+.row {
+  display: grid;
+  grid-template-columns: 300px 100px 100px;
+  padding-bottom: 1rem;
+}

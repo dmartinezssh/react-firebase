@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import {firestore} from './firebase';
+import { NewDeveloper } from './NewDeveloper';
+import './App.css'
 
 const App = () => {
   const [ developers, setDevelopers] = useState([])
+  const [currentId, setCurrentId] = useState('')
 
   const getDevelopers = async () => {
     /* const querySnapshot = await firestore.collection('links').get();
@@ -26,9 +29,15 @@ const App = () => {
     getDevelopers()
   }, [])
 
-  const addLinks = async () => {
-    await firestore.collection('links').doc().set({name: 'jocelyn', job: 'developer'})
-    console.log('Nuevo registro agregado')
+  const addLinks = async (developer) => {
+    if(!!currentId) {
+      await firestore.collection('links').doc(currentId).update(developer)
+      console.log('Registro actualizado')
+    } else {
+      await firestore.collection('links').doc().set(developer)
+      console.log('Nuevo registro agregado')
+    }
+    
   }
 
   const removeDeveloper = async (id) => {
@@ -38,15 +47,21 @@ const App = () => {
     }
   }
 
+  const editDeveloper = id => {
+    setCurrentId(id)
+  }
+
   return (
     <>
-      <h1>PRUEBA DE FIREBASE</h1>
+      <h1>List developers</h1>
+      <NewDeveloper addLinks={addLinks} currentId={currentId} />
       <button onClick={() => addLinks()}>Agregar</button>
       {developers.map(dev => (
-        <h1>
-          <span>{dev.name}</span>
+        <div className='row' key={dev.id}>
+          <span>{dev.name} {dev?.area}</span>
           <span onClick={() => removeDeveloper(dev.id)}>Remove</span>
-        </h1>
+          <span onClick={() => editDeveloper(dev.id)}>Edit</span>
+        </div>
       ))}
     </>
   );
